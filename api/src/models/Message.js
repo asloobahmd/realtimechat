@@ -3,13 +3,18 @@ import mongoose from "mongoose";
 const MessageSchema = mongoose.Schema(
   {
     conversationId: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Conversation",
+      required: true,
     },
     sender: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
     },
     text: {
       type: String,
+      required: true,
     },
   },
   { timestamps: true }

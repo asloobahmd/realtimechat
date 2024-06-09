@@ -1,11 +1,10 @@
 import { useContext } from "react";
 import { Link, Navigate } from "react-router-dom";
 
-import { AuthContext } from "../context/AuthContext";
-import RegisterForm from "@/components/forms/RegisterForm";
 import LoginForm from "@/components/forms/LoginForm";
+import { AuthContext } from "../context/AuthContext";
 
-const Register = () => {
+const Login = () => {
   const { currentUser } = useContext(AuthContext);
 
   if (currentUser) {
@@ -33,4 +32,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default Login;

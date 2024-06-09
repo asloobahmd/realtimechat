@@ -9,6 +9,7 @@ const ConversationContainer = ({
   sideBarVisible,
   setCurrentConvo,
   currentUser,
+  convosFetchingLoading,
 }) => {
   const [searchVal, setSearchVal] = useState("");
 
@@ -38,6 +39,18 @@ const ConversationContainer = ({
       queryClient.invalidateQueries(["conversations", currentUser?.id]);
     },
   });
+
+  const handleClick = async (receiverId) => {
+    try {
+      const res = await createConvo({
+        senderId: currentUser.id,
+        receiverId: receiverId,
+      });
+      setSearchVal("");
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <div
@@ -79,10 +92,7 @@ const ConversationContainer = ({
               <div
                 key={u._id}
                 className="cursor-pointer p-2 hover:bg-gray-300 rounded-sm"
-                onClick={() => {
-                  createConvo({ senderId: currentUser.id, receiverId: u._id });
-                  setSearchVal("");
-                }}
+                onClick={() => handleClick(u._id)}
               >
                 {u.username}
               </div>
@@ -90,7 +100,9 @@ const ConversationContainer = ({
           </div>
         )}
         <div className="flex flex-col pr-2 gap-2 mt-2 h-[90%] overflow-y-auto">
-          {conversations?.length > 0 ? (
+          {convosFetchingLoading ? (
+            <div>Loading...</div>
+          ) : conversations?.length > 0 ? (
             conversations?.map((convo) => (
               <div
                 className=""

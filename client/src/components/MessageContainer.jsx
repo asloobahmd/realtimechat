@@ -40,7 +40,7 @@ const MessageContainer = () => {
     });
   }, [currentUser]);
 
-  const { data: conversations, isLoading } = useQuery({
+  const { data: conversations, isLoading: convosFetchingLoading } = useQuery({
     queryKey: ["conversations", currentUser?.id],
     queryFn: async () => {
       const res = await API.get(`/conversation/${currentUser?.id}`, {
@@ -128,6 +128,7 @@ const MessageContainer = () => {
         sideBarVisible={sideBarVisible}
         setCurrentConvo={setCurrentConvo}
         currentUser={currentUser}
+        convosFetchingLoading={convosFetchingLoading}
       />
       {/* chat box container */}
       <div className="flex-[2]">
@@ -145,7 +146,7 @@ const MessageContainer = () => {
                 {messagesFetchingLoading ? (
                   <div className="h-full">Loading...</div>
                 ) : messages.length == 0 ? (
-                  <div className="text-gray-500 text-5xl">Start a chat</div>
+                  <div className="text-gray-500 text-5xl">Send a nessage</div>
                 ) : (
                   messages?.map((m, i) => (
                     <div ref={scrollRef} key={i}>

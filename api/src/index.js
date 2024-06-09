@@ -20,17 +20,19 @@ app.use(
     credentials: true,
   })
 );
-app.use(cookieParser());
 app.use(express.json());
+app.use(cookieParser());
 
-app.get("/", (req, res) => {
-  res.json("Hello from api");
-});
 // Routes
 app.use("/auth", authRoutes);
 app.use("/user", authMiddleware, userRoutes);
 app.use("/conversation", authMiddleware, convoRoutes);
 app.use("/message", authMiddleware, messageRoutes);
+
+//test route
+app.get("/", (req, res) => {
+  res.json("Hello from api - testing");
+});
 
 server.listen(PORT, () => {
   connectDB();

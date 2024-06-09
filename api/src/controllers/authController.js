@@ -21,9 +21,7 @@ export const register = async (req, res) => {
     });
 
     if (!createdUser)
-      return res
-        .status(500)
-        .json("Something went wrong, couldn't create user.");
+      return res.status(400).json("Invalid user data, couldn't create user");
 
     const userObj = {
       id: createdUser.id,
@@ -32,8 +30,8 @@ export const register = async (req, res) => {
 
     return res.status(201).json(userObj);
   } catch (error) {
-    console.log(error);
-    return res.status(500).json("Something went wrong, couldn't create user.");
+    console.log("Error in register controller", error.message);
+    res.status(500).json("Internal server error");
   }
 };
 
@@ -64,10 +62,9 @@ export const login = async (req, res) => {
       })
       .status(200)
       .json(userObj);
-    //
   } catch (error) {
-    console.log(error);
-    return res.status(500).json("Something went wrong, try login later.");
+    console.log("Error in login controller", error.message);
+    return res.status(500).json("Internal server error");
   }
 };
 
@@ -81,6 +78,7 @@ export const logout = async (req, res) => {
       .status(200)
       .json("User has been logged out");
   } catch (error) {
-    console.log(error);
+    console.log("Error in logout controller", error.message);
+    return res.status(500).json("Internal server error");
   }
 };
