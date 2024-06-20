@@ -1,9 +1,8 @@
-import React, { useContext } from "react";
+import { useAuthContext } from "@/context/AuthContext";
 import { Button } from "./ui/button";
-import { AuthContext } from "@/context/AuthContext";
 
 const Navbar = () => {
-  const { currentUser, logout } = useContext(AuthContext);
+  const { currentUser, logout } = useAuthContext();
 
   const handleLogout = async () => {
     await logout();

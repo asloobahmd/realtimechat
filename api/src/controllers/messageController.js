@@ -9,6 +9,13 @@ export const addMessage = async (req, res) => {
       return res.status(400).json("Required informations are missing");
     }
 
+    // interview task
+    // const isContainTheWordChiken = text.includes("chicken");
+    // if (isContainTheWordChiken) {
+    //   console.log(sender);
+    //   return;
+    // }
+
     const newMessage = new Message(req.body);
 
     const savedMessage = await newMessage.save();

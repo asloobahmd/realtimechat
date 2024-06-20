@@ -1,39 +1,43 @@
-import React, { createContext, useContext, useEffect, useRef } from "react";
-import { io } from "socket.io-client";
+import { createContext, useContext, useEffect, useState } from "react";
+import io from "socket.io-client";
+import { useAuthContext } from "./AuthContext";
 
 const SocketContext = createContext();
 
 export const SocketProvider = ({ children }) => {
-  const socket = useRef();
+  const [socket, setSocket] = useState();
+  const [onlineUsers, setOnlineUsers] = useState([]);
+  const { currentUser } = useAuthContext();
 
   useEffect(() => {
-    socket.current = io("http://localhost:4000/");
-    console.log("Socket initialized", socket.current);
+    if (currentUser) {
+      const socket = io("http://localhost:4000/", {
+        query: {
+          userId: currentUser.id,
+        },
+      });
+      setSocket(socket);
 
-    socket.current.on("connect", () => {
-      console.log("Connected to socket server");
-    });
+      socket.on("getOnlineUser", (users) => {
+        setOnlineUsers(users);
+      });
 
-    socket.current.on("disconnect", () => {
-      console.log("Disconnected from socket server");
-    });
-
-    return () => {
-      socket.current.disconnect();
-    };
-  }, []);
+      return () => socket.close();
+    } else {
+      if (socket) {
+        socket.close();
+        setSocket(null);
+      }
+    }
+  }, [currentUser]);
 
   return (
-    <SocketContext.Provider value={socket.current}>
+    <SocketContext.Provider value={{ socket, onlineUsers }}>
       {children}
     </SocketContext.Provider>
   );
 };
 
 export const useSocket = () => {
-  const context = useContext(SocketContext);
-  if (context === undefined) {
-    throw new Error("useSocket must be used within a SocketProvider");
-  }
-  return context;
+  return useContext(SocketContext);
 };

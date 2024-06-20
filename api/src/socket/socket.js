@@ -1,6 +1,6 @@
-import { Server } from "socket.io";
-import http from "http";
 import express from "express";
+import http from "http";
+import { Server } from "socket.io";
 
 const app = express();
 const server = http.createServer(app);
@@ -11,35 +11,25 @@ const io = new Server(server, {
   },
 });
 
-let users = [];
-
-const addUser = (userId, socketId) => {
-  !users.some((u) => u.userId === userId) && users.push({ userId, socketId });
+const getReceiverSocketId = (userId) => {
+  return usersListObj[userId];
 };
 
-const removeUser = (socketId) => {
-  users = users.filter((u) => u.socketId !== socketId);
-};
-
-const getUser = (userId) => {
-  return users.find((u) => u.userId === userId);
-};
+const usersListObj = {};
 
 io.on("connection", (socket) => {
-  // when connect
   console.log("a user connected");
 
-  //take userId and socketId from user
-  socket.on("adduser", (userId) => {
-    console.log("a user connected");
-    addUser(userId, socket.id);
-    io.emit("getUsers", users);
-  });
+  const userId = socket.handshake.query.userId;
+  if (userId != "undefined") usersListObj[userId] = socket.id;
+
+  io.emit("getOnlineUser", Object.keys(usersListObj));
 
   // send and get message
   socket.on("sendMessage", ({ senderId, receiverId, text }) => {
-    const receiver = getUser(receiverId);
-    io.to(receiver?.socketId).emit("getMessage", {
+    const receiverSocketId = getReceiverSocketId(receiverId);
+
+    io.to(receiverSocketId).emit("getMessage", {
       senderId,
       text,
     });
@@ -48,9 +38,9 @@ io.on("connection", (socket) => {
   // when disconnect
   socket.on("disconnect", () => {
     console.log("a user disconnected");
-    removeUser(socket.id);
-    io.emit("getUsers", users);
+    delete usersListObj[userId];
+    io.emit("getOnlineUser", Object.keys(usersListObj));
   });
 });
 
-export { app, server };
+export { app, io, server };

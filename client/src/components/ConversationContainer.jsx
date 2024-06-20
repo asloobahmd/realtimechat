@@ -1,19 +1,29 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import Conversation from "./Conversation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import API from "@/api";
+import { AuthContext } from "@/context/AuthContext";
 
 const ConversationContainer = ({
-  conversations,
   setsidebarVisible,
   sideBarVisible,
   setCurrentConvo,
-  currentUser,
-  convosFetchingLoading,
 }) => {
   const [searchVal, setSearchVal] = useState("");
 
   const queryClient = useQueryClient();
+
+  const { currentUser } = useContext(AuthContext);
+
+  const { data: conversations, isLoading: convosFetchingLoading } = useQuery({
+    queryKey: ["conversations", currentUser?.id],
+    queryFn: async () => {
+      const res = await API.get(`/conversation/${currentUser?.id}`, {
+        withCredentials: true,
+      });
+      return res.data;
+    },
+  });
 
   const { data: users } = useQuery({
     queryKey: ["users", searchVal],

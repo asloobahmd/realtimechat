@@ -1,15 +1,15 @@
 import { app, server } from "./socket/socket.js";
 
-import express from "express";
-import cors from "cors";
 import cookieParser from "cookie-parser";
+import cors from "cors";
+import express from "express";
 import { connectDB } from "./config/db.js";
 
-import userRoutes from "./routes/user.js";
+import { authMiddleware } from "./middlewares/authMiddleware.js";
 import authRoutes from "./routes/auth.js";
 import convoRoutes from "./routes/conversation.js";
 import messageRoutes from "./routes/message.js";
-import { authMiddleware } from "./middlewares/authMiddleware.js";
+import userRoutes from "./routes/user.js";
 
 const PORT = process.env.PORT || 5000;
 
