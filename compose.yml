@@ -1,0 +1,27 @@
+version: "3.8"
+
+services:
+  web:
+    build: ./client
+    container_name: chatapp_client_c
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:4000
+    networks:
+      - chatapp_network
+    depends_on:
+      - api
+
+  api:
+    build: ./api
+    container_name: chatapp_api_c
+    ports:
+      - "4000:4000"
+    env_file:
+      - ./api/.env
+    networks:
+      - chatapp_network
+
+networks:
+  chatapp_network:
